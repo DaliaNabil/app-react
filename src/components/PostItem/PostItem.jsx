@@ -6,6 +6,7 @@ import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from "flo
 import { FaCommentAlt } from "react-icons/fa";
 import CreatComment from '../Comments/CreatComment';
 import HandleUpdateDelete from '../HandleUpdateDelete/HandleUpdateDelete';
+import { formatDate } from './../../lib/FormatDate';
 
 export default function PostItem({ post }) {
     const loc = useLocation()
@@ -22,7 +23,7 @@ export default function PostItem({ post }) {
                 <img src={photo} alt='' className='w-15 h-15 rounded-full' />
                 <div>
                     <span> {name} </span>
-                    <p> {formatData(createdAt)} </p>
+                    <p> {formatDate(createdAt)} </p>
                 </div>
                 <HandleUpdateDelete isComment={false} itemId={_id} image={image} />
             </div>
