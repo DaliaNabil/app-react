@@ -1,5 +1,4 @@
 import React from 'react'
-import { formatDate } from './../../lib/formatDate';
 import HandleUpdateDelete from '../HandleUpdateDelete/HandleUpdateDelete';
 
 export default function CommentItem({comment}) {
@@ -20,7 +19,7 @@ export default function CommentItem({comment}) {
                                    className='w-15 h-15 rounded-full'
                                    onError={(e) => e.currentTarget.src = '/vite.svg'} />
                                <span> {name}</span>
-                               <p> {formatDate(createdAt)} </p>
+                               <p> {formatData(createdAt)} </p>
 </div>
 
                 <HandleUpdateDelete  itemId={_id} />
