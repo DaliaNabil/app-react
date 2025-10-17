@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
+
+@theme{
+    --font-main:"Roboto" , sans-serif
+}
+body{
+    @apply font-main bg-gray-200
+}
+.container{
+    @apply mx-auto px-8
+}
