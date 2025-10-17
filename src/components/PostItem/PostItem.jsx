@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Button, Card } from "flowbite-react";
-import { formatDate } from './../../lib/formatDate';
 import { Link, useLocation } from 'react-router-dom';
 import Comments from './../Comments/Comments';
 import { Accordion, AccordionContent, AccordionPanel, AccordionTitle } from "flowbite-react";
@@ -23,7 +22,7 @@ export default function PostItem({ post }) {
                 <img src={photo} alt='' className='w-15 h-15 rounded-full' />
                 <div>
                     <span> {name} </span>
-                    <p> {formatDate(createdAt)} </p>
+                    <p> {formatData(createdAt)} </p>
                 </div>
                 <HandleUpdateDelete isComment={false} itemId={_id} image={image} />
             </div>
