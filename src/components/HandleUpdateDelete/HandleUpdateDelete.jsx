@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // ✅ استيراد useEffect
+import React, { useState, useEffect } from 'react';
 import { Button, Dropdown, DropdownItem, Label, Textarea, TextInput } from "flowbite-react";
 import { useMutation, useQueryClient } from '@tanstack/react-query'; 
 import toast from 'react-hot-toast';
@@ -6,12 +6,11 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 
 export default function HandleUpdateDelete({ isComment = true, itemId, initialContent, image }) {
-      
     
     const [edit, setEdit] = useState(false);
     const [preview, setPreview] = useState(null); 
 
-    const { register, handleSubmit, reset, watch } = useForm({ //watch
+    const { register, handleSubmit, reset, watch } = useForm({
         defaultValues: {
             content: initialContent || '', 
             body: initialContent || '' 
@@ -24,13 +23,15 @@ export default function HandleUpdateDelete({ isComment = true, itemId, initialCo
     useEffect(() => {
         if (imageFile && imageFile.length > 0) {
             setPreview(URL.createObjectURL(imageFile[0]));
-        } else if (preview) {
-            // مسح العرض المسبق إذا تم إلغاء اختيار الملف
+        } else {
             setPreview(null);
         }
-    }, [imageFile, preview]);
+        return () => {
+             if (preview) URL.revokeObjectURL(preview);
+        };
+    }, [imageFile]);
 
-    // --- منطق الحذف ---
+
     const { mutate: handleDleteItem, isPending: isDeleting } = useMutation({
         mutationFn: deleteItem,
         onSuccess: () => {
@@ -47,19 +48,17 @@ export default function HandleUpdateDelete({ isComment = true, itemId, initialCo
         const endPoint = isComment ? 'comments' : 'posts';
         return await axios.delete(`https://linked-posts.routemisr.com/${endPoint}/${itemId}`, {
             headers: {
-                // 🛑 2. تصحيح رأس المصادقة للقياسي
                 token:localStorage.getItem('userToken')
             }
         });
     }
 
-    // --- منطق التحديث ---
     const { mutate: handleUpdateMutate, isPending: isUpdating } = useMutation({
         mutationFn: updateItem,
         onSuccess: () => {
              toast.success(`${isComment ? 'Comment' : 'Post'} updated successfully.`);
              setEdit(false);
-             setPreview(null); 
+             setPreview(null);
              queryClient.invalidateQueries({ queryKey: isComment ? ['postDetails'] : ['posts'] });
         },
         onError: (err) => {
@@ -70,7 +69,7 @@ export default function HandleUpdateDelete({ isComment = true, itemId, initialCo
 
     async function updateItem(data) {
         const headers = {
-            token :localStorage.getItem('userToken')
+           token:localStorage.getItem('userToken')
         };
 
         if (isComment) {
@@ -111,24 +110,24 @@ export default function HandleUpdateDelete({ isComment = true, itemId, initialCo
             </Dropdown>
 
             {edit && (
-                <div className='fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50'>
+                <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
                     <div className='bg-white p-6 rounded-lg shadow-xl w-full max-w-lg'>
                         <form onSubmit={handleSubmit(handleUpdateMutate)}>
                             
                             {!isComment && (
-                                <>
+                                <div className='mb-4'>
                                     <input type='file' {...register('image')} hidden id='fileImg' /> 
-                                    <label htmlFor='fileImg'>
+                                    <label htmlFor='fileImg' className="block cursor-pointer">
                                         <img 
-                                            src={preview || image || '/default-placeholder.png'} 
+                                            src={preview || image || 'https://via.placeholder.com/600x400?text=Select+Image'} 
                                             alt="Post Image"
-                                            className='w-full mb-3 object-cover max-h-60 cursor-pointer'
+                                            className='w-full object-cover max-h-60 rounded-lg border border-dashed border-gray-300'
                                         />
+                                        <p className="text-center text-sm text-gray-500 mt-1">Click to change image</p>
                                     </label>
-                                </>
+                                </div>
                             )}
                             
-                            {/* حقول النص */}
                             <div className="mb-4 block">
                                 <Label htmlFor="edit-message">Your message</Label>
                             </div>
@@ -155,7 +154,7 @@ export default function HandleUpdateDelete({ isComment = true, itemId, initialCo
                                 <Button type='submit' disabled={isUpdating}>
                                     {isUpdating ? 'Updating...' : 'Update'}
                                 </Button>
-                                <Button color='gray' onClick={() => { setEdit(false); setPreview(null); }} disabled={isUpdating}>
+                                <Button color='gray' onClick={() => { setEdit(false); reset(); }} disabled={isUpdating}>
                                     Close
                                 </Button>
                             </div>
